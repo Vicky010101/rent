@@ -1,0 +1,238 @@
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title> Shopping</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css"
+        integrity="sha512-iBBXm8fW90+nuLcSKlbmrPcLa0OT92xO1BIsZ+ywDWZCvqsWgccV3gFoRBv0z+8dLJgyAHIhR35VZc2oM/gI1w=="
+        crossorigin="anonymous" referrerpolicy="no-referrer" />
+    <link rel="stylesheet" href="style.css" />
+
+
+</head>
+<script> $(document).ready(function () {
+
+        $("a").on("click", function (event) {
+
+            if (this.hash !== "") {
+
+                event.preventDefault();
+
+
+                var hash = this.hash;
+
+
+                $("html, body").animate(
+                    {
+                        scrollTop: $(hash).offset().top,
+                    },
+                    800,
+                    function () {
+
+                        window.location.hash = hash;
+                    }
+                );
+            }
+        });
+    });</script>
+
+<body>
+    <nav class="navbar">
+        <div class="navbar-container container">
+            <input type="checkbox" name="" id="">
+            <div class="hamburger-lines">
+                <span class="line line1"></span>
+                <span class="line line2"></span>
+                <span class="line line3"></span>
+            </div>
+            <ul class="menu-items">
+                <li><a href="#home">Home</a></li>
+                <li><a href="#about">About</a></li>
+                <li><a href="#food">Category</a></li>
+                <li><a href="#food-menu">Menu</a></li>
+                <li><a href="#shop">Shop</a></li>
+                <li><a href="#contact">Contact</a></li>
+
+            </ul>
+            <h2 class="logo">GLAM IT UP RIGHT HERE..</h2>
+        </div>
+    </nav>
+    <section class="showcase-area" id="showcase">
+        <div class="showcase-container">
+            <h1 class="main-title" id="home">RENTAL STORE</h1>
+            <p>ENJOY YOUR DAY WITH THE RENTED GIFT....</p>
+            <a href="#food-menu" class="btn btn-primary">Menu</a>
+        </div>
+    </section>
+
+    <section id="about">
+        <div class="about-wrapper container">
+            <div class="about-text">
+                <p class="small">About Us</p>
+                <h2>CLOTHES ON RENT </h2>
+                <p>
+                    Enhancing the Efficiency and Reach of an Online Clothing Rental Business
+
+                    Background:
+                    Our company, [Your Business Name], operates an online platform that provides a wide range of
+                    clothing on rent for various occasions such as weddings, parties, and corporate events. The goal is
+                    to offer customers access to high-quality, fashionable attire without the need to purchase expensive
+                    clothing items outright. While the business has garnered interest, several challenges hinder its
+                    growth and operational efficiency.
+                </p>
+            </div>
+            <div class="about-img">
+                <img src="https://i.pinimg.com/originals/bf/c2/95/bfc2959f28d2cf1f4e4da06cd497406d.jpg" />
+            </div>
+        </div>
+    </section>
+    <section id="food">
+        <h2>Types of Rental</h2>
+        <div class="food-container container">
+            <div class="food-type fruite">
+                <div class="img-container">
+                    <img src="https://c.ndtvimg.com/2021-08/ij6spaqo_clothes650_625x300_30_August_21.jpg" />
+                    <div class="img-content">
+                        <h3>Fest </h3>
+
+                    </div>
+                </div>
+            </div>
+            <div class="food-type vegetable">
+                <div class="img-container">
+                    <img src="https://www.sanacademy.edu.in/pallikaranai/images/beyond-academics/celebration/ganesh-chaturthi/3.jpg"
+                        alt="error" />
+                    <div class="img-content">
+                        <h3>Drama Wears</h3>
+
+                    </div>
+                </div>
+            </div>
+            <div class="food-type grin">
+                <div class="img-container">
+                    <img src="https://1.bp.blogspot.com/-kkXhwDXvYng/Uka4kY8W8uI/AAAAAAAA1oY/_i2DQd6k6BE/s1600/HOT_INDIAN_ACTRESS_000003018.JPG"
+                        alt="error" />
+                    <div class="img-content">
+                        <h3>Banjaran</h3>
+
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+    <section id="food-menu">
+        <h2 class="food-menu-heading">RENT STORE</h2>
+        <div class="food-menu-container container">
+            <div class="food-menu-item">
+                <div class="food-img">
+                    <img src="https://i.ytimg.com/vi/axMTakbVGeY/maxresdefault.jpg" alt="" />
+                </div>
+                <div class="food-description">
+                    <h2 class="food-titile">Janmastmi Ornaments</h2>
+                    <p>
+                        Krishna Janmastmi ornaments.
+                    </p>
+                    <p class="food-price">Rent Price: &#8377; 249</p>
+                </div>
+            </div>
+
+            <div class="food-menu-item">
+                <div class="food-img">
+                    <img src="http://pluspng.com/img-png/jewellery-png-png-file-name-indian-jewellery-1511.png"
+                        alt="error" />
+                </div>
+                <div class="food-description">
+                    <h2 class="food-titile">Jewellery</h2>
+                    <p>
+                        Jewellery Set.
+                    </p>
+                    <p class="food-price">Rent Price: &#8377; 289</p>
+                </div>
+            </div>
+            <div class="food-menu-item">
+                <div class="food-img">
+                    <img src="https://thumbs.dreamstime.com/z/traditional-handicrafts-rajasthan-rajasthani-pagdis-clothing-catches-attention-visitor-here-traditional-180813420.jpg"
+                        alt="" />
+                </div>
+                <div class="food-description">
+                    <h2 class="food-titile">Rajastani Peta</h2>
+                    <p>
+                        Rajastani petas with different colors.
+                    </p>
+                    <p class="food-price">Rent Price: &#8377; 159</p>
+                </div>
+            </div>
+            <div class="food-menu-item">
+                <div class="food-img">
+                    <img src="https://thumbs.dreamstime.com/z/indian-boy-traditional-rajasthani-clothes-camel-festival-rajasthan-india-bikaner-january-poses-photo-state-203719390.jpg"
+                        alt="" />
+                </div>
+                <div class="food-description">
+                    <h2 class="food-titile">Rajastani Wear</h2>
+                    <p>
+                        Rajastani whole costume.
+                    </p>
+                    <p class="food-price">Rent Price: &#8377; 599</p>
+                </div>
+            </div>
+            <div class="food-menu-item">
+                <div class="food-img">
+                    <img src="https://i.etsystatic.com/20406834/r/il/60fcef/3361886903/il_1140xN.3361886903_eb4l.jpg"
+                        alt="" />
+                </div>
+                <div class="food-description">
+                    <h2 class="food-titile">Maharaja Peta</h2>
+                    <p>
+                        Marrage pagadis .
+                    </p>
+                    <p class="food-price">Rent Price: &#8377; 250</p>
+                </div>
+            </div>
+            <div class="food-menu-item">
+                <div class="food-img">
+                    <img src="https://indocrafty.com/wp-content/uploads/2022/11/24-5.jpeg" alt="" />
+                </div>
+                <div class="food-description">
+                    <h2 class="food-titile">Oxidised Jewellery</h2>
+                    <p>
+                        Oxidised Jewellery set.
+                    </p>
+                    <p class="food-price">Rent Price: &#8377; 279</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section id="contact">
+        <div class="contact-container container">
+            <div class="contact-img">
+                <img src="http://prod-cdn.thekrazycouponlady.com/wp-content/uploads/2015/03/rent-clothes-2-670x1005.png"
+                    alt="" />
+            </div>
+
+            <div class="form-container">
+                <h2>Contact Us</h2>
+                <input type="text" placeholder="Your Name" />
+                <input type="email" placeholder="E-Mail" />
+                <textarea cols="30" rows="6" placeholder="Type Your Message"></textarea>
+                <a href="#" class="btn btn-primary">Submit</a>
+            </div>
+        </div>
+    </section>
+
+
+    <footer id="footer">
+
+    </footer>
+
+
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+    <script src="app.js"></script>
+
+</html>
+
+</body>
+
+</html>
