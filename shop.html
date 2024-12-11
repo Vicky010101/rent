@@ -1,0 +1,1079 @@
+<html>
+
+<head>
+  <base href="/">
+  <title>StyleShare - Clothes Rental Marketplace</title>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
+  <script src="https://accounts.google.com/gsi/client" async></script>
+  <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+  <script src="https://cdn.jsdelivr.net/npm/qrcode.js@1.0.0/qrcode.min.js"></script>
+
+  <style>
+    :root {
+      --primary: #2c3e50;
+      --secondary: #e74c3c;
+      --bg-light: #f8f9fa;
+      --text-light: #2c3e50;
+      --card-bg-light: #ffffff;
+      --card-shadow: 0 3px 15px rgba(0, 0, 0, 0.1);
+      --hover-transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    }
+
+    :root[data-theme="dark"] {
+      --primary: #1a202c;
+      --secondary: #e53e3e;
+      --bg-light: #2d3748;
+      --text-light: #e2e8f0;
+      --card-bg-light: #2c3e50;
+      --card-shadow: 0 3px 15px rgba(0, 0, 0, 0.3);
+    }
+
+    body {
+      background-color: var(--bg-light);
+      color: var(--text-light);
+      transition: all 0.3s ease;
+    }
+
+    .navbar {
+      background: var(--primary);
+      padding: 1.2rem;
+      box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+    }
+
+    .cart-badge {
+      position: relative;
+      background: var(--secondary);
+      border-radius: 50%;
+      padding: 0.3rem 0.6rem;
+      font-size: 0.9rem;
+      top: -12px;
+      box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
+    }
+
+    .product-card {
+      transition: var(--hover-transition);
+      margin: 1rem;
+      border: none;
+      box-shadow: var(--card-shadow);
+      background-color: var(--card-bg-light);
+      color: var(--text-light);
+      border-radius: 12px;
+      overflow: hidden;
+    }
+
+    .product-card:hover {
+      transform: translateY(-8px);
+      box-shadow: 0 5px 20px rgba(0, 0, 0, 0.2);
+    }
+
+    .product-card img {
+      cursor: pointer;
+      transition: opacity 0.3s;
+    }
+
+    .product-card img:hover {
+      opacity: 0.8;
+    }
+
+    .rental-period {
+      width: 100px;
+    }
+
+    .upload-preview {
+      max-width: 200px;
+      max-height: 200px;
+      object-fit: cover;
+      border-radius: 8px;
+      box-shadow: var(--card-shadow);
+    }
+
+    #uploadModal .modal-body {
+      padding: 2rem;
+    }
+
+    .login-container {
+      max-width: 400px;
+      margin: 100px auto;
+      padding: 2.5rem;
+      box-shadow: var(--card-shadow);
+      border-radius: 16px;
+      background-color: var(--card-bg-light);
+      color: var(--text-light);
+      transition: var(--hover-transition);
+    }
+
+    .main-content {
+      display: none;
+      /* Hide main content initially */
+    }
+
+    .google-btn {
+      width: 100%;
+      background: #fff;
+      border: 1px solid #ddd;
+      padding: 0.5rem;
+      margin: 1rem 0;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 10px;
+      transition: var(--hover-transition);
+      border-radius: 8px;
+      box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+    }
+
+    .google-btn:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 4px 10px rgba(0, 0, 0, 0.15);
+    }
+
+    /* Theme toggle switch styles */
+    .theme-switch {
+      position: relative;
+      display: inline-block;
+      width: 65px;
+      height: 36px;
+      margin-left: 15px;
+    }
+
+    .theme-switch input {
+      opacity: 0;
+      width: 0;
+      height: 0;
+    }
+
+    .slider {
+      position: absolute;
+      cursor: pointer;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      background-color: #ccc;
+      transition: .4s;
+      border-radius: 34px;
+    }
+
+    .slider:before {
+      position: absolute;
+      content: "";
+      height: 28px;
+      width: 28px;
+      left: 4px;
+      bottom: 4px;
+      background-color: white;
+      transition: .4s;
+      border-radius: 50%;
+      box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
+    }
+
+    input:checked+.slider {
+      background-color: var(--secondary);
+    }
+
+    input:checked+.slider:before {
+      transform: translateX(26px);
+    }
+
+    .modal-content {
+      border-radius: 16px;
+      border: none;
+      box-shadow: var(--card-shadow);
+    }
+
+    .modal-header {
+      border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+      padding: 1.5rem;
+    }
+
+    .modal-footer {
+      border-top: 1px solid rgba(255, 255, 255, 0.1);
+      padding: 1.5rem;
+    }
+
+    /* Form controls */
+    .form-control {
+      background-color: var(--bg-light);
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      color: var(--text-light);
+      border-radius: 8px;
+      padding: 0.8rem;
+    }
+
+    .form-control:focus {
+      background-color: var(--bg-light);
+      border-color: var(--secondary);
+      color: var(--text-light);
+      box-shadow: 0 0 0 3px rgba(231, 76, 60, 0.2);
+    }
+
+    .dropdown-menu {
+      background-color: var(--card-bg-light);
+      border: none;
+      box-shadow: var(--card-shadow);
+      padding: 0.5rem;
+    }
+
+    .dropdown-item {
+      color: var(--text-light);
+      padding: 0.5rem 1rem;
+      border-radius: 6px;
+    }
+
+    .dropdown-item:hover {
+      background-color: var(--bg-light);
+      color: var(--secondary);
+    }
+
+    .dropdown-item i {
+      width: 20px;
+      margin-right: 8px;
+    }
+
+    .dropdown-header {
+      color: var(--text-light);
+      opacity: 0.8;
+    }
+
+    #settingsDropdown {
+      padding: 0.5rem;
+      border-radius: 50%;
+      width: 40px;
+      height: 40px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    #settingsDropdown i {
+      font-size: 1.2rem;
+    }
+
+    .tracking-timeline {
+      padding: 1rem;
+    }
+
+    .tracking-step {
+      display: flex;
+      align-items: center;
+      margin-bottom: 1rem;
+    }
+
+    .tracking-step.completed i {
+      color: green;
+    }
+
+    .tracking-step.active i {
+      color: orange;
+    }
+
+    .tracking-step i {
+      margin-right: 10px;
+    }
+  </style>
+</head>
+
+<body>
+
+  <!-- Navbar -->
+  <nav class="navbar navbar-expand-lg navbar-dark">
+    <div class="container">
+      <a class="navbar-brand">ShareYourStyle</a>
+      <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+        <span class="navbar-toggler-icon"></span>
+      </button>
+      <div class="collapse navbar-collapse" id="navbarNav">
+        <ul class="navbar-nav me-auto">
+          <li class="nav-item">
+
+          </li>
+          <li class="nav-item">
+            <a class="nav-link" href="#" data-bs-toggle="modal" data-bs-target="#uploadModal">Upload Your Style</a>
+          </li>
+        </ul>
+        <div class="d-flex align-items-center">
+          <label class="theme-switch me-3">
+            <input type="checkbox" id="themeToggle">
+            <span class="slider"></span>
+          </label>
+
+          <div class="dropdown">
+            <button class="btn btn-light position-relative me-3" onclick="showCart()">
+              <i class="fas fa-shopping-cart"></i>
+              <span class="cart-badge" id="cartCount">0</span>
+            </button>
+          </div>
+
+          <div class="dropdown">
+            <button class="btn btn-light" type="button" id="settingsDropdown" data-bs-toggle="dropdown"
+              aria-expanded="false">
+              <i class="fas fa-cog"></i>
+            </button>
+            <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="settingsDropdown">
+              <li>
+                <h6 class="dropdown-header" id="userEmail"></h6>
+              </li>
+              <li><a class="dropdown-item" href="#" onclick="showAccountSettings()">
+                  <i class="fas fa-user-cog"></i> Account Settings
+                </a></li>
+              <li><a class="dropdown-item" href="#" onclick="showOrderHistory()">
+                  <i class="fas fa-history"></i> Order History
+                </a></li>
+              <li><a class="dropdown-item" href="#" onclick="showWishlist()">
+                  <i class="fas fa-heart"></i> Wishlist
+                </a></li>
+              <li>
+                <hr class="dropdown-divider">
+              </li>
+              <li><a class="dropdown-item" href="#" onclick="handleLogout()">
+                  <i class="fas fa-sign-out-alt"></i> Logout
+                </a></li>
+            </ul>
+          </div>
+        </div>
+      </div>
+    </div>
+  </nav>
+
+  <!-- Login Container -->
+  <div class="login-container" id="loginContainer">
+    <h3 class="text-center mb-4">Welcome to StyleShare</h3>
+    <div class="mb-4">
+      <button class="btn btn-primary w-100 mb-2" onclick="showLoginForm('customer')">Customer Login</button>
+      <button class="btn btn-secondary w-100" onclick="showLoginForm('admin')">Admin Login</button>
+    </div>
+    <div id="loginFormContainer" style="display: none;">
+      <form id="loginForm" onsubmit="handleLogin(event)">
+        <div class="mb-3">
+          <input type="email" class="form-control" placeholder="Email" required>
+        </div>
+        <div class="mb-3">
+          <input type="password" class="form-control" placeholder="Password" required>
+        </div>
+        <button type="submit" class="btn btn-primary w-100">Login</button>
+      </form>
+      <button class="google-btn">
+        <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 48 48">
+          <path fill="#FFC107"
+            d="M43.611 20.083H42V20H24v8h11.303c-1.649 4.657-6.08 8-11.303 8c-6.627 0-12-5.373-12-12s5.373-12 12-12c3.059 0 5.842 1.154 7.961 3.039l5.657-5.657C34.046 6.053 29.268 4 24 4C12.955 4 4 12.955 4 24s8.955 20 20 20s20-8.955 20-20c0-1.341-.138-2.65-.389-3.917z" />
+          <path fill="#FF3D00"
+            d="m6.306 14.691l6.571 4.819C14.655 15.108 18.961 12 24 12c3.059 0 5.842 1.154 7.961 3.039l5.657-5.657C34.046 6.053 29.268 4 24 4C16.318 4 9.656 8.337 6.306 14.691z" />
+          <path fill="#4CAF50"
+            d="M24 44c5.166 0 9.86-1.977 13.409-5.192l-6.19-5.238A11.91 11.91 0 0 1 24 36c-5.202 0-9.619-3.317-11.283-7.946l-6.522 5.025C9.505 39.556 16.227 44 24 44z" />
+          <path fill="#1976D2"
+            d="M43.611 20.083H42V20H24v8h11.303a12.04 12.04 0 0 1-4.087 5.571l.003-.002l6.19 5.238C36.971 39.205 44 34 44 24c0-1.341-.138-2.65-.389-3.917z" />
+        </svg>
+        <span>Continue with Google</span>
+      </button>
+      <div class="text-center mt-3">
+        <p>Don't have an account? <a href="#" onclick="showRegisterForm()">Sign Up</a></p>
+        <button class="btn btn-link" onclick="backToLoginOptions()">Back to Login Options</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Main Content -->
+  <div class="container my-5">
+    <div class="row" id="productGrid">
+      <!-- Products will be dynamically loaded here -->
+    </div>
+  </div>
+
+  <!-- Login Modal -->
+  <div class="modal fade" id="loginModal">
+    <div class="modal-dialog">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title">Login</h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+        </div>
+        <div class="modal-body">
+          <form id="loginForm">
+            <div class="mb-3">
+              <input type="email" class="form-control" placeholder="Email">
+            </div>
+            <div class="mb-3">
+              <input type="password" class="form-control" placeholder="Password">
+            </div>
+            <button type="submit" class="btn btn-primary w-100 mb-3">Login</button>
+            <div id="g_id_onload" data-client_id="YOUR_GOOGLE_CLIENT_ID" data-callback="handleGoogleLogin">
+            </div>
+            <div class="g_id_signin" data-type="standard"></div>
+          </form>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Upload Modal -->
+  <div class="modal fade" id="uploadModal">
+    <div class="modal-dialog">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title">Upload Your Style</h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+        </div>
+        <div class="modal-body">
+          <form id="uploadForm">
+            <div class="mb-3">
+              <label class="form-label">Upload Image</label>
+              <input type="file" class="form-control" accept="image/*" onchange="previewImage(event)">
+            </div>
+            <div class="mb-3">
+              <img id="uploadPreview" class="upload-preview d-none">
+            </div>
+            <div class="mb-3">
+              <input type="text" class="form-control" placeholder="Item Name">
+            </div>
+            <div class="mb-3">
+              <input type="number" class="form-control" placeholder="Rental Price per Day">
+            </div>
+            <button type="submit" class="btn btn-primary w-100">Upload for Rent</button>
+          </form>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Cart Modal -->
+  <div class="modal fade" id="cartModal">
+    <div class="modal-dialog modal-lg">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title">Shopping Cart</h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+        </div>
+        <div class="modal-body">
+          <div id="cartItems"></div>
+          <div class="mt-3">
+            <h5>Payment Details</h5>
+            <div class="mb-3">
+              <div class="form-check">
+                <input class="form-check-input" type="radio" name="payment" id="phonepe">
+                <label class="form-check-label" for="phonepe">PhonePe</label>
+              </div>
+              <div class="form-check">
+                <input class="form-check-input" type="radio" name="payment" id="gpay">
+                <label class="form-check-label" for="gpay">Google Pay</label>
+              </div>
+              <div class="form-check">
+                <input class="form-check-input" type="radio" name="payment" id="card">
+                <label class="form-check-label" for="card">Credit/Debit Card</label>
+              </div>
+            </div>
+            <div id="qrCodeContainer" class="text-center d-none">
+              <div id="qrcode" class="mb-2"></div>
+              <p class="small text-muted">Scan with Google Pay to complete payment</p>
+            </div>
+            <div id="cardDetails" class="d-none">
+              <input type="text" class="form-control mb-2" placeholder="Card Number">
+              <div class="row">
+                <div class="col">
+                  <input type="text" class="form-control" placeholder="MM/YY">
+                </div>
+                <div class="col">
+                  <input type="text" class="form-control" placeholder="CVV">
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="modal-footer">
+          <button class="btn btn-primary" onclick="processPayment()">Proceed to Payment</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Account Settings Modal -->
+  <div class="modal fade settings" id="accountSettingsModal">
+    <div class="modal-dialog modal-lg">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title">Account Settings</h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+        </div>
+        <div class="modal-body">
+          <div class="row">
+            <div class="col-md-3">
+              <div class="nav flex-column nav-pills" role="tablist">
+                <button class="nav-link active" data-bs-toggle="pill" data-bs-target="#profile">Profile</button>
+                <button class="nav-link" data-bs-toggle="pill" data-bs-target="#security">Security</button>
+                <button class="nav-link" data-bs-toggle="pill" data-bs-target="#notifications">Notifications</button>
+                <button class="nav-link" data-bs-toggle="pill" data-bs-target="#preferences">Preferences</button>
+              </div>
+            </div>
+            <div class="col-md-9">
+              <div class="tab-content">
+                <div class="tab-pane fade show active" id="profile">
+                  <h6>Profile Settings</h6>
+                  <form id="profileForm">
+                    <div class="mb-3">
+                      <input type="text" class="form-control" placeholder="Full Name">
+                    </div>
+                    <div class="mb-3">
+                      <input type="email" class="form-control" placeholder="Email">
+                    </div>
+                    <div class="mb-3">
+                      <input type="tel" class="form-control" placeholder="Phone Number">
+                    </div>
+                    <button type="submit" class="btn btn-primary">Save Changes</button>
+                  </form>
+                </div>
+                <div class="tab-pane fade" id="security">
+                  <h6>Security Settings</h6>
+                  <form id="securityForm">
+                    <div class="mb-3">
+                      <input type="password" class="form-control" placeholder="Current Password">
+                    </div>
+                    <div class="mb-3">
+                      <input type="password" class="form-control" placeholder="New Password">
+                    </div>
+                    <div class="mb-3">
+                      <input type="password" class="form-control" placeholder="Confirm New Password">
+                    </div>
+                    <button type="submit" class="btn btn-primary">Update Password</button>
+                  </form>
+                </div>
+                <div class="tab-pane fade" id="notifications">
+                  <h6>Notification Preferences</h6>
+                  <div class="form-check mb-2">
+                    <input class="form-check-input" type="checkbox" id="emailNotif">
+                    <label class="form-check-label" for="emailNotif">Email Notifications</label>
+                  </div>
+                  <div class="form-check mb-2">
+                    <input class="form-check-input" type="checkbox" id="smsNotif">
+                    <label class="form-check-label" for="smsNotif">SMS Notifications</label>
+                  </div>
+                  <div class="form-check mb-2">
+                    <input class="form-check-input" type="checkbox" id="promoNotif">
+                    <label class="form-check-label" for="promoNotif">Promotional Updates</label>
+                  </div>
+                </div>
+                <div class="tab-pane fade" id="preferences">
+                  <h6>App Preferences</h6>
+                  <div class="mb-3">
+                    <label class="form-label">Language</label>
+                    <select class="form-select">
+                      <option>English</option>
+                      <option>Hindi</option>
+                      <option>Spanish</option>
+                    </select>
+                  </div>
+                  <div class="mb-3">
+                    <label class="form-label">Currency</label>
+                    <select class="form-select">
+                      <option>INR (₹)</option>
+                      <option>USD ($)</option>
+                      <option>EUR (€)</option>
+                    </select>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js"></script>
+  <script>
+    let cart = [];
+    let wishlist = [];
+    const products = [
+      { id: 1, name: 'Jacket', price: 150, image: 'https://cdn.shopify.com/s/files/1/0419/1525/files/1024x1024-Mens-Jacket-Keanu-Black-110221-1_2500268f-57c0-4ba9-b9da-0f009a11bdb4_1080x1080.jpg?v=1661565133,<svg xmlns="http://www.w3.org/2000/svg" width="200" height="200"><rect width="100%" height="100%" fill="%23ddd"/></svg>' },
+      { id: 2, name: 'Formal Suit', price: 120, image: 'https://shoezero.com/cdn/shop/articles/OkamiXIV_creative_air_one_Jordan_design._d9846298-85e4-4d34-b987-20336e023d7a_1.webp?v=1697553616&width=1500,<svg xmlns="http://www.w3.org/2000/svg" width="200" height="200"><rect width="100%" height="100%" fill="%23ddd"/></svg>' },
+      { id: 3, name: 'Wedding Lehenga', price: 200, image: 'https://tse4.mm.bing.net/th?id=OIP.FTneIUI48E1XK_9CY-t1LwHaLH&pid=Api&P=0&h=180,<svg xmlns="http://www.w3.org/2000/svg" width="200" height="200"><rect width="100%" height="100%" fill="%23ffcdd2"/></svg>' },
+      { id: 4, name: 'Traditional Saree', price: 230, image: 'https://tse1.mm.bing.net/th?id=OIP.gqYXu0PVWmqs5S8MeRg4aQHaG-&pid=Api&P=0&h=180,<svg xmlns="http://www.w3.org/2000/svg" width="200" height="200"><rect width="100%" height="100%" fill="%23e1bee7"/></svg>' },
+      { id: 5, name: 'Business Blazer', price: 180, image: 'https://tse1.mm.bing.net/th?id=OIP.cFn_apT5pARag-IBnF6Y3QHaHa&pid=Api&P=0&h=180,<svg xmlns="http://www.w3.org/2000/svg" width="200" height="200"><rect width="100%" height="100%" fill="%23bbdefb"/></svg>' },
+      { id: 6, name: 'Party Gown', price: 130, image: 'https://tse4.mm.bing.net/th?id=OIP.gUxrYg5l12utgBSETXbTtQHaIh&pid=Api&P=0&h=180,<svg xmlns="http://www.w3.org/2000/svg" width="200" height="200"><rect width="100%" height="100%" fill="%23c8e6c9"/></svg>' },
+      { id: 7, name: 'Designer Sherwani', price: 260, image: 'https://tse2.mm.bing.net/th?id=OIP.2r_CdjE-iCnbhsgl9K0KTgHaLH&pid=Api&P=0&h=180,<svg xmlns="http://www.w3.org/2000/svg" width="200" height="200"><rect width="100%" height="100%" fill="%23ffe0b2"/></svg>' },
+      { id: 8, name: 'Garba Dress', price: 229, image: 'https://tse4.mm.bing.net/th?id=OIP.w10EYebZwbf2Ztp9wmCz6gHaJQ&pid=Api&P=0&h=180,<svg xmlns="http://www.w3.org/2000/svg" width="200" height="200"><rect width="100%" height="100%" fill="%23f8bbd0"/></svg>' },
+      { id: 9, name: 'Indo-Western Set', price: 149, image: 'https://tse1.mm.bing.net/th?id=OIP.5GkTng_7E7vb1twbGUT3VgHaKt&pid=Api&P=0&h=180,<svg xmlns="http://www.w3.org/2000/svg" width="200" height="200"><rect width="100%" height="100%" fill="%23b2dfdb"/></svg>' }
+    ];
+
+    function loadProducts() {
+      const grid = document.getElementById('productGrid');
+      grid.innerHTML = products.map(product => `
+    <div class="col-md-4">
+      <div class="card product-card">
+        <img src="${product.image}"  
+           
+        <div class="card-body">
+          <h5 class="card-title">${product.name}</h5>
+          <p class="card-text">₹${product.price}/day</p>
+          <div class="d-flex align-items-center">
+            <input type="number" class="form-control rental-period me-2" min="1" value="1" id="days-${product.id}">
+            <button class="btn btn-primary me-2" onclick="addToCart(${product.id})">Add to Cart</button>
+            <button class="btn btn-outline-danger" onclick="addToWishlist(${product.id})">
+              <i class="fas fa-heart"></i>
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+  `).join('');
+    }
+
+    function addToWishlist(productId) {
+      const product = products.find(p => p.id === productId);
+      const exists = wishlist.some(item => item.id === productId);
+
+      if (exists) {
+        wishlist = wishlist.filter(item => item.id !== productId);
+        Swal.fire({
+          title: 'Removed from Wishlist!',
+          icon: 'success',
+          timer: 1500
+        });
+      } else {
+        wishlist.push(product);
+        Swal.fire({
+          title: 'Added to Wishlist!',
+          icon: 'success',
+          timer: 1500
+        });
+      }
+    }
+
+    function showWishlist() {
+      const wishlistHTML = wishlist.length ? wishlist.map(item => `
+    <div class="col-6 mb-3">
+      <div class="card">
+        <img src="${item.image}" class="card-img-top" alt="${item.name}">
+        <div class="card-body">
+          <h6>${item.name}</h6>
+          <p class="mb-2">₹${item.price}/day</p>
+          <div class="d-flex justify-content-between align-items-center">
+            <button class="btn btn-sm btn-primary" onclick="addToCart(${item.id})">Move to Cart</button>
+            <button class="btn btn-sm btn-danger" onclick="removeFromWishlist(${item.id})">
+              <i class="fas fa-trash"></i>
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+  `).join('') : '<p class="text-center">Your wishlist is empty</p>';
+
+      Swal.fire({
+        title: 'My Wishlist',
+        html: `<div class="row">${wishlistHTML}</div>`,
+        showCloseButton: true,
+        showConfirmButton: false,
+        width: '800px'
+      });
+    }
+
+    function removeFromWishlist(productId) {
+      wishlist = wishlist.filter(item => item.id !== productId);
+      showWishlist();
+    }
+
+    function addToCart(productId) {
+      const days = document.getElementById(`days-${productId}`).value;
+      const product = products.find(p => p.id === productId);
+      cart.push({ ...product, days: parseInt(days) });
+      updateCartCount();
+      Swal.fire({
+        title: 'Added to Cart!',
+        icon: 'success',
+        timer: 1500
+      });
+    }
+
+    function updateCartCount() {
+      document.getElementById('cartCount').textContent = cart.length;
+    }
+
+    function showCart() {
+      const cartItems = document.getElementById('cartItems');
+      let totalAmount = 0;
+
+      // Calculate total amount
+      cart.forEach(item => {
+        totalAmount += item.price * item.days;
+      });
+
+      cartItems.innerHTML = `
+    ${cart.map(item => `
+      <div class="card mb-2">
+        <div class="card-body">
+          <h6>${item.name}</h6>
+          <p>Rental Period: ${item.days} days</p>
+          <p>Total: ₹${item.price * item.days}</p>
+        </div>
+      </div>
+    `).join('')}
+    <div class="card bg-light mt-3">
+      <div class="card-body">
+        <h5 class="d-flex justify-content-between">
+          <span>Grand Total:</span>
+          <span>₹${totalAmount}</span>
+        </h5>
+      </div>
+    </div>
+  `;
+      new bootstrap.Modal(document.getElementById('cartModal')).show();
+    }
+
+    function processPayment() {
+      const selectedPayment = document.querySelector('input[name="payment"]:checked');
+
+      if (selectedPayment && selectedPayment.id === 'gpay') {
+        Swal.fire({
+          title: 'Waiting for Payment',
+          text: 'Please complete the payment using Google Pay',
+          icon: 'info',
+          showCancelButton: true,
+          cancelButtonText: 'Cancel Payment',
+          showConfirmButton: false,
+          allowOutsideClick: false
+        }).then((result) => {
+          if (result.dismiss === Swal.DismissReason.cancel) {
+            return;
+          }
+        });
+
+        // Simulate payment verification (replace with actual payment verification)
+        setTimeout(() => {
+          Swal.fire({
+            title: 'Payment Successful!',
+            text: 'Your items will be delivered soon.',
+            icon: 'success'
+          }).then(() => {
+            cart = [];
+            updateCartCount();
+            bootstrap.Modal.getInstance(document.getElementById('cartModal')).hide();
+          });
+        }, 5000);
+      } else {
+        // Handle other payment methods (existing code)
+        Swal.fire({
+          title: 'Payment Successful!',
+          text: 'Your items will be delivered soon.',
+          icon: 'success'
+        }).then(() => {
+          cart = [];
+          updateCartCount();
+          bootstrap.Modal.getInstance(document.getElementById('cartModal')).hide();
+        });
+      }
+    }
+
+    function showLoginForm(type) {
+      document.getElementById('loginFormContainer').style.display = 'block';
+      document.querySelector('.mb-4').style.display = 'none';
+      document.querySelector('#loginForm').dataset.type = type;
+      document.querySelector('.login-container h3').textContent =
+        type === 'admin' ? 'Admin Login' : 'Customer Login';
+    }
+
+    function backToLoginOptions() {
+      document.getElementById('loginFormContainer').style.display = 'none';
+      document.querySelector('.mb-4').style.display = 'block';
+      document.querySelector('.login-container h3').textContent = 'Welcome to StyleShare';
+    }
+
+    function handleLogin(event) {
+      event.preventDefault();
+      const type = event.target.dataset.type;
+      // Add your login logic here
+
+      // For demo purposes, we'll just show success and redirect
+      Swal.fire({
+        title: 'Login Successful!',
+        icon: 'success',
+        timer: 1500
+      }).then(() => {
+        document.getElementById('loginContainer').style.display = 'none';
+        document.querySelector('.container.my-5').style.display = 'block';
+      });
+    }
+
+    function showRegisterForm() {
+      // Add your registration form logic here
+      Swal.fire({
+        title: 'Registration',
+        html: `
+      <input type="text" class="form-control mb-2" placeholder="Full Name">
+      <input type="email" class="form-control mb-2" placeholder="Email">
+      <input type="password" class="form-control mb-2" placeholder="Password">
+      <input type="password" class="form-control" placeholder="Confirm Password">
+    `,
+        showCancelButton: true,
+        confirmButtonText: 'Register',
+        cancelButtonText: 'Cancel',
+        showLoaderOnConfirm: true,
+        preConfirm: () => {
+          return new Promise(resolve => {
+            setTimeout(() => {
+              resolve();
+            }, 1000);
+          });
+        }
+      }).then((result) => {
+        if (result.isConfirmed) {
+          Swal.fire({
+            title: 'Registration Successful!',
+            icon: 'success',
+            timer: 1500
+          });
+        }
+      });
+    }
+
+    function previewImage(event) {
+      const preview = document.getElementById('uploadPreview');
+      preview.src = URL.createObjectURL(event.target.files[0]);
+      preview.classList.remove('d-none');
+    }
+
+    function handleGoogleLogin(response) {
+      // Handle Google login response
+      console.log(response);
+    }
+
+    // Initialize
+    document.addEventListener('DOMContentLoaded', () => {
+      loadProducts();
+      document.querySelector('.container.my-5').style.display = 'none'; // Hide main content initially
+
+      // Theme toggle functionality
+      const themeToggle = document.getElementById('themeToggle');
+      const root = document.documentElement;
+
+      // Check for saved theme preference
+      const savedTheme = localStorage.getItem('theme');
+      if (savedTheme === 'dark') {
+        root.setAttribute('data-theme', 'dark');
+        themeToggle.checked = true;
+      }
+
+      themeToggle.addEventListener('change', function () {
+        if (this.checked) {
+          root.setAttribute('data-theme', 'dark');
+          localStorage.setItem('theme', 'dark');
+        } else {
+          root.removeAttribute('data-theme');
+          localStorage.setItem('theme', 'light');
+        }
+      });
+
+      // Show QR code when GPay is selected
+      document.getElementById('gpay').addEventListener('change', function () {
+        const qrContainer = document.getElementById('qrCodeContainer');
+        const cardDetails = document.getElementById('cardDetails');
+
+        if (this.checked) {
+          qrContainer.classList.remove('d-none');
+          cardDetails.classList.add('d-none');
+
+          // Generate QR code with payment details
+          const qrcode = new QRCode(document.getElementById("qrcode"), {
+            text: generatePaymentString(),
+            width: 200,
+            height: 200
+          });
+        } else {
+          qrContainer.classList.add('d-none');
+        }
+      });
+
+      // Hide QR code when other payment methods are selected
+      document.querySelectorAll('input[name="payment"]').forEach(radio => {
+        radio.addEventListener('change', function () {
+          if (this.id !== 'gpay') {
+            document.getElementById('qrCodeContainer').classList.add('d-none');
+          }
+        });
+      });
+
+      // Show card details when card payment is selected
+      document.getElementById('card').addEventListener('change', function () {
+        document.getElementById('cardDetails').classList.remove('d-none');
+      });
+
+      // Hide card details when other payment methods are selected
+      document.querySelectorAll('input[name="payment"]').forEach(radio => {
+        radio.addEventListener('change', function () {
+          if (this.id !== 'card') {
+            document.getElementById('cardDetails').classList.add('d-none');
+          }
+        });
+      });
+    });
+
+    // Add new function to generate payment string
+    function generatePaymentString() {
+      let totalAmount = 0;
+      cart.forEach(item => {
+        totalAmount += item.price * item.days;
+      });
+
+      // Create a payment string with merchant details and amount
+      const paymentData = {
+        merchantName: "StyleShare",
+        merchantId: "STYLESHARE123", // Replace with actual merchant ID
+        amount: totalAmount,
+        currency: "INR",
+        orderId: "ORDER" + Date.now()
+      };
+
+      return JSON.stringify(paymentData);
+    }
+
+    // New functions for account settings
+    function showAccountSettings() {
+      new bootstrap.Modal(document.getElementById('accountSettingsModal')).show();
+    }
+
+    function showOrderHistory() {
+      const mockOrders = [
+        {
+          orderId: "ORD12345",
+          date: new Date().toLocaleDateString(),
+          items: [
+            { name: "Designer Dress", days: 3, price: 4000, status: "Active" }
+          ],
+          totalAmount: 12000,
+          deliveryAddress: "123 Park Street, Mumbai",
+          paymentMethod: "Google Pay",
+          deliveryDate: new Date(Date.now() + 86400000).toLocaleDateString()
+        },
+        {
+          orderId: "ORD12344",
+          date: new Date(Date.now() - 86400000).toLocaleDateString(),
+          items: [
+            { name: "Formal Suit", days: 2, price: 6000, status: "Completed" }
+          ],
+          totalAmount: 12000,
+          deliveryAddress: "456 Lake Road, Delhi",
+          paymentMethod: "Card",
+          deliveryDate: new Date(Date.now() - 86400000).toLocaleDateString()
+        },
+        {
+          orderId: "ORD12343",
+          date: new Date(Date.now() - 172800000).toLocaleDateString(),
+          items: [
+            { name: "Wedding Lehenga", days: 4, price: 8000, status: "Completed" }
+          ],
+          totalAmount: 32000,
+          deliveryAddress: "789 Hill View, Bangalore",
+          paymentMethod: "PhonePe",
+          deliveryDate: new Date(Date.now() - 172800000).toLocaleDateString()
+        }
+      ];
+
+      const orderHistoryHTML = mockOrders.map(order => `
+    <div class="card mb-3">
+      <div class="card-header d-flex justify-content-between align-items-center">
+        <h6 class="mb-0">Order #${order.orderId}</h6>
+        <span class="badge ${order.items[0].status === 'Active' ? 'bg-success' : 'bg-secondary'}">
+          ${order.items[0].status}
+        </span>
+      </div>
+      <div class="card-body">
+        <div class="row">
+          <div class="col-md-6">
+            <p class="mb-1"><strong>Order Date:</strong> ${order.date}</p>
+            <p class="mb-1"><strong>Delivery Date:</strong> ${order.deliveryDate}</p>
+            <p class="mb-1"><strong>Payment Method:</strong> ${order.paymentMethod}</p>
+            <p class="mb-1"><strong>Delivery Address:</strong><br>${order.deliveryAddress}</p>
+          </div>
+          <div class="col-md-6">
+            <h6>Items</h6>
+            ${order.items.map(item => `
+              <div class="d-flex justify-content-between align-items-center mb-2">
+                <div>
+                  <p class="mb-0">${item.name}</p>
+                  <small class="text-muted">Rental Period: ${item.days} days</small>
+                </div>
+                <div>
+                  <p class="mb-0">₹${item.price}/day</p>
+                  <p class="mb-0"><strong>Total: ₹${item.price * item.days}</strong></p>
+                </div>
+              </div>
+            `).join('')}
+            <hr>
+            <div class="d-flex justify-content-between">
+              <h6>Order Total:</h6>
+              <h6>₹${order.totalAmount}</h6>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="card-footer">
+        <div class="d-flex justify-content-end gap-2">
+          <button class="btn btn-sm btn-outline-primary" onclick="downloadInvoice('${order.orderId}')">
+            <i class="fas fa-download me-1"></i> Download Invoice
+          </button>
+          <button class="btn btn-sm btn-outline-secondary" onclick="trackOrder('${order.orderId}')">
+            <i class="fas fa-truck me-1"></i> Track Order
+          </button>
+        </div>
+      </div>
+    </div>
+  `).join('');
+
+      Swal.fire({
+        title: 'Order History',
+        html: `<div class="order-history-container">${orderHistoryHTML}</div>`,
+        showCloseButton: true,
+        showConfirmButton: false,
+        width: '900px',
+        scrollbarPadding: false
+      });
+    }
+
+    // Add supporting functions for order history actions
+    function downloadInvoice(orderId) {
+      Swal.fire({
+        title: 'Downloading Invoice',
+        text: `Downloading invoice for order #${orderId}...`,
+        icon: 'info',
+        timer: 1500,
+        showConfirmButton: false
+      });
+    }
+
+    function trackOrder(orderId) {
+      Swal.fire({
+        title: 'Track Order',
+        html: `
+      <div class="tracking-timeline">
+        <div class="tracking-step completed">
+          <i class="fas fa-check-circle"></i>
+          <p>Order Placed</p>
+          <small>20 Oct 2023, 10:30 AM</small>
+        </div>
+        <div class="tracking-step completed">
+          <i class="fas fa-check-circle"></i>
+          <p>Payment Confirmed</p>
+          <small>20 Oct 2023, 10:35 AM</small>
+        </div>
+        <div class="tracking-step active">
+          <i class="fas fa-truck"></i>
+          <p>Out for Delivery</p>
+          <small>Expected: 21 Oct 2023</small>
+        </div>
+        <div class="tracking-step">
+          <i class="fas fa-home"></i>
+          <p>Delivered</p>
+          <small>Pending</small>
+        </div>
+      </div>
+    `,
+        showCloseButton: true,
+        showConfirmButton: false,
+        width: '600px'
+      });
+    }
+  </script>
+
+</body>
+
+</html>
